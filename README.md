@@ -14,7 +14,7 @@ Vous pouvez tester l'application via cet URl déja déployé: [`Support Ticket A
 #### Screenshots
 
 <div style="display: flex; gap: 0.5rem; justify-content: space-between">
-  <img src="https://github.com/btkdevkh/support-ticket/blob/main/public/screenshot_1.png?raw=true" />
+  <img src="https://github.com/btkdevkh/support-ticket/blob/main/public/screenshot_1.png?raw=true" width="1000" />
 </div>
 
 ## Démarrer
