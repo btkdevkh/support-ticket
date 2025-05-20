@@ -27,16 +27,20 @@ const TicketItem = ({ ticket }: TicketItemProps) => {
 
       {/* Right side */}
       <div className="text-right space-y-2">
-        <div className="text-sm- text-gray-500 text-center">
-          État:{" "}
-          <span className={getStatusClass(ticket.status)}>
-            {getStatusTranslateFR(ticket.status)}
-          </span>
-          {", "}
-          Priorité:{" "}
-          <span className={getPriorityClass(ticket.priority)}>
-            {getPriorityTranslateFR(ticket.priority)}
-          </span>
+        <div className="text-sm text-gray-500 text-center">
+          <div className="flex gap-2">
+            <span>État: </span>
+            <span className={getStatusClass(ticket.status)}>
+              {getStatusTranslateFR(ticket.status)}
+            </span>
+          </div>
+
+          <div className="flex gap-2">
+            <span>Priorité: </span>
+            <span className={getPriorityClass(ticket.priority)}>
+              {getPriorityTranslateFR(ticket.priority)}
+            </span>
+          </div>
         </div>
         <Link
           href={`/tickets/${ticket.id}`}
@@ -46,7 +50,7 @@ const TicketItem = ({ ticket }: TicketItemProps) => {
               : "bg-blue-600 text-white hover:bg-blue-700"
           }`}
         >
-          Visualiser le ticket
+          Visualiser
         </Link>
       </div>
     </div>

@@ -13,7 +13,7 @@ const TicketsPage = async () => {
 
   return (
     <>
-      <main className="min-h-screen bg-blue-50 p-8">
+      <div className="min-h-screen p-3">
         <h1 className="text-3xl font-bold text-blue-600 text-center mb-6">
           Support Tickets
         </h1>
@@ -27,7 +27,7 @@ const TicketsPage = async () => {
             ))}
           </div>
         )}
-      </main>
+      </div>
     </>
   );
 };

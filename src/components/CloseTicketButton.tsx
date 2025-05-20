@@ -40,7 +40,7 @@ const CloseTicketButton = ({ ticketId, isClosed }: CloseTicketButtonProps) => {
           type="submit"
           className="bg-red-700 text-white px-3 py-2 cursor-pointer"
         >
-          Fermer le ticket
+          Fermer
         </button>
       </form>
     </>
