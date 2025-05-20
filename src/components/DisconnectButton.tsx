@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { useActionState, useEffect } from "react";
 import { logOutUser } from "@/actions/auth.actions";
 
-const LogoutButton = () => {
+const DisconnectButton = () => {
   const [state, formAction] = useActionState(logOutUser, {
     success: false,
     message: "",
@@ -27,4 +27,4 @@ const LogoutButton = () => {
   );
 };
 
-export default LogoutButton;
+export default DisconnectButton;
