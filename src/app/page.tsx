@@ -1,16 +1,20 @@
+import Image from "next/image";
 import Link from "next/link";
-import { FaTicketAlt } from "react-icons/fa";
 
 const HomePage = () => {
   return (
     <main className="container mx-auto">
       <div className="min-h-screen flex flex-col justify-center items-center gap-6">
-        <FaTicketAlt className="mx-auto text-red-600" size={60} />
+        <Image
+          src="/circuit.png"
+          width={100}
+          height={100}
+          alt="Logo"
+          priority
+        />
 
-        <h1 className="text-blue-700 text-2xl">
-          Bienvenue sur le Support Ticket
-        </h1>
-        <p>Une première et simple d'un support du système management.</p>
+        <h1 className="text-blue-700 text-2xl">Bienvenue au Support Ticket</h1>
+        <p>Une première et simple d'un système de Support de Ticket.</p>
 
         <div className="flex flex-col gap-2 animate-slide opacity-0 text-center">
           <Link href="/tickets/new" className="bg-blue-700 p-3 text-white">

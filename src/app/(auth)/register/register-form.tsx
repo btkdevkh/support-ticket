@@ -1,22 +1,25 @@
 "use client";
 
 import { useActionState, useEffect } from "react";
-import { createTicket } from "@/actions/ticket.actions";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { registerUser } from "@/actions/auth.actions";
 
-const NewTicketForm = () => {
+const RegisterForm = () => {
   const router = useRouter();
 
-  const [state, formAction] = useActionState(createTicket, {
+  const [state, formAction] = useActionState(registerUser, {
     success: false,
     message: "",
   });
 
   useEffect(() => {
     if (state.success) {
-      toast.success("Ticket crée!");
+      toast.success("Compte crée!");
       router.push("/tickets");
+      router.refresh();
+    } else if (state.message) {
+      toast.error(state.message);
     }
   }, [state.success, router]);
 
@@ -24,7 +27,7 @@ const NewTicketForm = () => {
     <>
       <div className="w-full max-w-md bg-white p-6 shadow-md">
         <h1 className="text-blue-700 text-2xl mb-5 text-center">
-          Créer un Support Ticket
+          S'enregistrer
         </h1>
 
         {state.message && !state.success && (
@@ -35,31 +38,27 @@ const NewTicketForm = () => {
           <input
             className="w-full p-2 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
             type="text"
-            placeholder="Sujet"
-            name="subject"
+            placeholder="Prénom et NOM"
+            name="name"
           />
-
-          <textarea
+          <input
             className="w-full p-2 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            rows={5}
-            placeholder="Décrivez votre problème"
-            name="description"
+            type="email"
+            placeholder="Email"
+            name="email"
           />
-
-          <select
+          <input
             className="w-full p-2 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            name="priority"
-          >
-            <option value="Low">Priorité Normal</option>
-            <option value="Medium">Priorité Moyenne</option>
-            <option value="High">Priorité Haute</option>
-          </select>
+            type="password"
+            placeholder="Mot de passe"
+            name="password"
+          />
 
           <button
             type="submit"
             className="w-full bg-blue-700 p-3 text-white cursor-pointer"
           >
-            Valider
+            S'enregistrer
           </button>
         </form>
       </div>
@@ -67,4 +66,4 @@ const NewTicketForm = () => {
   );
 };
 
-export default NewTicketForm;
+export default RegisterForm;

@@ -1,5 +1,6 @@
 "use server";
 
+import { getCurrentUser } from "@/lib/current-user";
 import { prisma } from "@/lib/prisma";
 import { logSentryEvent } from "@/utils/sentry";
 import { revalidatePath } from "next/cache";
@@ -9,6 +10,22 @@ const createTicket = async (
   formData: FormData
 ): Promise<{ success: boolean; message: string }> => {
   try {
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser) {
+      logSentryEvent(
+        "Unauthorized : Current user not found",
+        "auth",
+        {},
+        "warning"
+      );
+
+      return {
+        success: false,
+        message: "Absent d'identification de l'utilisateur",
+      };
+    }
+
     const subject = formData.get("subject") as string;
     const description = formData.get("description") as string;
     const priority = formData.get("priority") as string;
@@ -24,13 +41,18 @@ const createTicket = async (
 
       return {
         success: false,
-        message: "All fields are required",
+        message: "Veuillez remplir tous les champs",
       };
     }
 
     // Create ticket
     const ticket = await prisma.ticket.create({
-      data: { subject, description, priority },
+      data: {
+        subject,
+        description,
+        priority,
+        user: { connect: { id: currentUser.id } },
+      },
     });
 
     // Sentry stuffs
@@ -45,7 +67,7 @@ const createTicket = async (
 
     return {
       success: true,
-      message: "Ticket created successfully!",
+      message: "Ticket crée!",
     };
   } catch (error) {
     console.log("Error: ", error);
@@ -62,15 +84,29 @@ const createTicket = async (
 
     return {
       success: false,
-      message: "An error occured while creating the ticket",
+      message: "Une erreur s'est produit, veuillez rééssayer plus tard!",
     };
   }
 };
 
 const getTickets = async () => {
   try {
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser) {
+      logSentryEvent(
+        "Unauthorized : Current user not found",
+        "auth",
+        {},
+        "warning"
+      );
+
+      return [];
+    }
+
     // Get tickets
     const tickets = await prisma.ticket.findMany({
+      where: { userId: currentUser.id },
       orderBy: { createdAt: "desc" },
     });
 
@@ -84,8 +120,6 @@ const getTickets = async () => {
 
     return tickets;
   } catch (error) {
-    console.log("Error: ", error);
-
     logSentryEvent(
       "An error occured while fetching the tickets",
       "ticket",
@@ -106,7 +140,6 @@ const getTicketById = async (id: number) => {
     });
 
     if (!ticket) {
-      // Sentry stuffs
       logSentryEvent(`Ticket not found`, "ticket", { ticketId: id }, "warning");
     }
 
@@ -126,4 +159,82 @@ const getTicketById = async (id: number) => {
   }
 };
 
-export { createTicket, getTickets, getTicketById };
+const closeTicket = async (
+  prevState: { success: boolean; message: string },
+  formData: FormData
+): Promise<{ success: boolean; message: string }> => {
+  try {
+    const ticketId = formData.get("ticketId");
+
+    if (!ticketId) {
+      logSentryEvent(`Ticket ID not found`, "ticket", {}, "warning");
+
+      return {
+        success: false,
+        message: "Absent d'identification du ticket",
+      };
+    }
+
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser) {
+      logSentryEvent(`User not found`, "auth", {}, "warning");
+
+      return {
+        success: false,
+        message: "Absent d'identification de l'utilisateur",
+      };
+    }
+
+    // Get ticket
+    const ticket = await prisma.ticket.findUnique({
+      where: { id: +ticketId },
+    });
+
+    if (!ticket || ticket.userId !== currentUser.id) {
+      logSentryEvent(
+        `Ticket not found`,
+        "ticket",
+        { ticketId, userId: currentUser.id },
+        "warning"
+      );
+
+      return {
+        success: false,
+        message: "Absent d'identification du ticket",
+      };
+    }
+
+    await prisma.ticket.update({
+      where: {
+        id: ticket.id,
+      },
+      data: {
+        status: "Closed",
+      },
+    });
+
+    revalidatePath("/tickets");
+    revalidatePath(`/tickets/${ticketId}`);
+
+    return {
+      success: true,
+      message: "Le ticket a bien été fermé!",
+    };
+  } catch (error) {
+    logSentryEvent(
+      "An error occured while closing the ticket",
+      "ticket",
+      {},
+      "error",
+      error
+    );
+
+    return {
+      success: false,
+      message: "Une erreur s'est produit, veuillez rééssayer plus tard!",
+    };
+  }
+};
+
+export { createTicket, getTickets, getTicketById, closeTicket };

@@ -14,4 +14,19 @@ const getPriorityTranslateFR = (priority: string) => {
     : "Normal";
 };
 
-export { getPriorityClass, getPriorityTranslateFR };
+const getStatusClass = (status: string) => {
+  return status === "Open"
+    ? "text-green-600 font-bold"
+    : "text-red-600 font-bold";
+};
+
+const getStatusTranslateFR = (status: string) => {
+  return status === "Open" ? "Ouvert" : "Fermé";
+};
+
+export {
+  getPriorityClass,
+  getPriorityTranslateFR,
+  getStatusTranslateFR,
+  getStatusClass,
+};
